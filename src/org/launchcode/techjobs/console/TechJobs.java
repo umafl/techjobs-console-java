@@ -1,8 +1,6 @@
 package org.launchcode.techjobs.console;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by LaunchCode
@@ -12,6 +10,8 @@ public class TechJobs {
     private static Scanner in = new Scanner(System.in);
 
     public static void main (String[] args) {
+
+        // Creates 2 local variables, columnChoices and actionChoices
 
         // Initialize our field map with key/name pairs
         HashMap<String, String> columnChoices = new HashMap<>();
@@ -28,40 +28,67 @@ public class TechJobs {
 
         System.out.println("Welcome to LaunchCode's TechJobs App!");
 
-        // Allow the user to search until they manually quit
+        // "while true " loops forever and
+        //allow user to search until they manually quit
+
         while (true) {
+            //this displays the two actionChoices to user
+            // 0 - Search
+            // 1 - List
 
             String actionChoice = getUserSelection("View jobs by:", actionChoices);
 
+            // if user selects "1 - List":
             if (actionChoice.equals("list")) {
+
+                // the code below calls getUserSelection function, displays columnChoices
+                // and stores user selection in columnChoice
 
                 String columnChoice = getUserSelection("List", columnChoices);
 
+                //   List:
+                // 0 - All
+                // 1 - Position Type
+                // 2 - Employer
+                // 3 - Location
+                // 4 - Skill
+
                 if (columnChoice.equals("all")) {
                     printJobs(JobData.findAll());
+
                 } else {
 
                     ArrayList<String> results = JobData.findAll(columnChoice);
 
                     System.out.println("\n*** All " + columnChoices.get(columnChoice) + " Values ***");
 
-                    // Print list of skills, employers, etc
+                    // // Prints list of skills, locations, employers, etc under *** All .... Values ***
+                    Collections.sort(results);
                     for (String item : results) {
+
                         System.out.println(item);
                     }
                 }
 
-            } else { // choice is "search"
+            } else { //  if user selection is "search"
 
-                // How does the user want to search (e.g. by skill or employer)
+                // the code below calls getUserSelection function, displays:
+                // Search by:
+                // 0 - All
+                // 1 - Position Type
+                // 2 - Employer
+                // 3 - Location
+                // 4 - Skill
                 String searchField = getUserSelection("Search by:", columnChoices);
 
                 // What is their search term?
+
                 System.out.println("\nSearch term: ");
                 String searchTerm = in.nextLine();
 
                 if (searchField.equals("all")) {
-                    System.out.println("Search all fields not yet implemented.");
+                    printJobs(JobData.findByValue(searchTerm));
+
                 } else {
                     printJobs(JobData.findByColumnAndValue(searchField, searchTerm));
                 }
@@ -108,9 +135,49 @@ public class TechJobs {
         return choiceKeys[choiceIdx];
     }
 
-    // Print a list of jobs
+    // broken.....Should print a list of jobs
     private static void printJobs(ArrayList<HashMap<String, String>> someJobs) {
+        //this needs to iterate over
 
-        System.out.println("printJobs is not implemented yet");
+        /* should print:
+        position type: Data....
+        name: Sr. IT Analyst..
+        employer: Bull Moose Industries
+        location: Saint Louis
+        core competency: Statistical ....
+         */
+        /*
+        if no results, print appropriate message
+
+        To do this, you'll need to iterate over an ArrayList of jobs.
+         Each job is itself a HashMap. While you can get each of the
+         items out of the HashMap using the known keys
+         ("employer", "location", etc), think instead about creating
+         a nested loop to loop over each HashMap
+
+         1. iterate over ArrayList 'allJobs'
+
+         */
+        if (someJobs.isEmpty()) {
+            System.out.print("\n" + "Error! Search term not found. Please refine search." + "/n");
+        }
+
+        for (int i = 0; i < someJobs.size(); i++) {
+            for (Map.Entry<String, String> record : someJobs.get(i).entrySet()) {
+                String key = record.getKey();
+                String value = record.getValue();
+                Integer counter = key.length();
+                if (counter == 13) {
+                    System.out.println("*****");
+                    System.out.println(key + ": " + value);
+                } else if (counter == 15) {
+                    System.out.println(key + ": " + value);
+                    System.out.println("*****");
+                    System.out.println("\n");
+                } else {
+                    System.out.println(key + ": " + value);
+                }
+            }
+        }
     }
 }
